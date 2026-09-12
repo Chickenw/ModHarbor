@@ -1,0 +1,15 @@
+{
+    "name": "gamenest/modharbor-runtime",
+    "description": "Isolated configuration parsers and version constraint evaluator for ModHarbor",
+    "require": {
+        "php": ">=8.2",
+        "composer/semver": "^3.4",
+        "symfony/yaml": "^7.0",
+        "yosymfony/toml": "^1.0"
+    },
+    "config": {
+        "platform": {"php": "8.2.0"},
+        "allow-plugins": false,
+        "sort-packages": true
+    }
+}

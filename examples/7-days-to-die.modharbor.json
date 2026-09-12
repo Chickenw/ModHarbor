@@ -1,0 +1,43 @@
+{
+    "schema_version": 1,
+    "key": "7-days-to-die",
+    "name": "7 Days to Die",
+    "enabled": false,
+    "steam_app_id": 251570,
+    "capability": "generic",
+    "detection": {
+        "egg_names": [
+            "7 Days to Die"
+        ],
+        "egg_ids": []
+    },
+    "sources": {
+        "upload": {
+            "metadata": {}
+        },
+        "github": {
+            "metadata": {}
+        },
+        "direct": {
+            "metadata": {}
+        }
+    },
+    "mod_directories": [
+        "Mods"
+    ],
+    "config_directories": [
+        "Configs"
+    ],
+    "package_types": [
+        "zip"
+    ],
+    "deployment": {
+        "strategy": "archive",
+        "target": "Mods",
+        "archive_prefix": ""
+    },
+    "behavior": {
+        "install_while_running": false,
+        "restart_required": true
+    }
+}

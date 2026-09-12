@@ -1,0 +1,15 @@
+{
+    "id": "gamenest-mod-manager",
+    "name": "ModHarbor",
+    "author": "ChickenWings",
+    "version": "1.0.0-rc.3",
+    "description": "Pelican mod manager with multi-game support. Add almost any game, or use built-in profiles for Minecraft, Valheim, 7DTD, Eco, Rust, and Icarus.",
+    "category": "plugin",
+    "namespace": "GameNest\\GameNestModManager",
+    "class": "GameNestModManagerPlugin",
+    "panel_version": "^1.0.0-beta38",
+    "meta": {
+        "status": "enabled",
+        "status_message": null
+    }
+}
