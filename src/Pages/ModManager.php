@@ -471,6 +471,12 @@ public int $modioPage = 1;
         ) {
             $this->browseUMod(false);
         }
+        if (
+            !in_array($this->browseProvider, ['', 'modio', 'umod'], true)
+            && $sources->capable($this->browseProvider, ProviderCapabilities::DISCOVER)
+        ) {
+            $this->browseDiscovery(false);
+        }
     }
 
     public static function canAccess(): bool
@@ -1685,6 +1691,8 @@ public function inspectGithubRepository(): void
         $allowed = [
             'all',
             '7d',
+            '14d',
+            '28d',
             '30d',
             '3m',
             '6m',

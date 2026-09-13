@@ -2411,14 +2411,97 @@
             object-position: center center !important;
             background: #0b1d2b;
         }
+        /* ModHarbor 2026 unified library */
+        body:has(.mh-builder) { background:#050d17; }
+        body:has(.mh-builder) .fi-header { display:none !important; }
+        body:has(.mh-builder) .fi-main { padding-inline:clamp(14px,2.2vw,32px) !important; }
+        .mh-builder { --mh-bg:#050d17;--mh-panel:#0a1725;--mh-panel-2:#0d1c2c;--mh-border:#1c3851;--mh-border-soft:#162d42;--mh-blue:#2b8cff; }
+        .mh-brand-banner { border-radius:18px !important;border-color:rgba(43,140,255,.28) !important;box-shadow:0 22px 50px rgba(0,0,0,.28); }
+        .mh-card { border-radius:16px;background:linear-gradient(145deg,rgba(12,29,45,.98),rgba(6,17,28,.98)); }
+        .mh-card-header { padding:20px 22px; }
+        .mh-catalog-stats { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px; }
+        .mh-catalog-stats div { display:flex;flex-direction:column;padding:13px 15px;border:1px solid var(--mh-border-soft);border-radius:12px;background:rgba(5,15,25,.55); }
+        .mh-catalog-stats strong { font-size:1.35rem;color:#fff;line-height:1.1; }
+        .mh-catalog-stats span { margin-top:5px;color:var(--mh-muted);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em; }
+        .mh-catalog-toolbar { display:flex;gap:10px;margin-bottom:16px; }
+        .mh-search-control { flex:1;display:flex;align-items:center;gap:9px;padding:0 13px;border:1px solid var(--mh-border);border-radius:11px;background:#07131f;color:#6ba9df; }
+        .mh-search-control input,.mh-filter-control { min-height:44px;border:0;outline:0;background:transparent;color:var(--mh-text); }
+        .mh-search-control input { width:100%; }
+        .mh-filter-control { min-width:150px;padding:0 12px;border:1px solid var(--mh-border);border-radius:11px;background:#07131f; }
+        .mh-game-card { padding:0;overflow:hidden;border-radius:14px; }
+        .mh-game-top { display:flex;flex-direction:column;gap:0; }
+        .mh-games-grid { grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:12px !important; }
+        .mh-game-mark { position:relative;width:100%;height:118px;flex:none;overflow:hidden;border:0;border-radius:0;background:#071421;isolation:isolate; }
+        .mh-game-mark::before { content:"";position:absolute;z-index:-2;inset:-16px;background-image:var(--mh-art);background-position:center;background-repeat:no-repeat;background-size:cover;filter:blur(13px) brightness(.42) saturate(1.15);transform:scale(1.08); }
+        .mh-game-mark::after { content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,12,20,.22),transparent 30%,transparent 70%,rgba(3,12,20,.22)); }
+        .mh-game-art { position:absolute;inset:3px;background-image:var(--mh-art);background-position:center;background-repeat:no-repeat;background-size:contain;transition:filter .2s ease,transform .2s ease; }
+        .mh-game-card:hover .mh-game-art { filter:brightness(1.06);transform:scale(1.01); }
+        .mh-game-heading,.mh-game-facts,.mh-game-providers,.mh-game-actions { margin-inline:12px; }
+        .mh-game-heading { width:calc(100% - 24px);padding-top:11px; }
+        .mh-game-facts { min-height:58px !important;margin-top:8px;font-size:.72rem;line-height:1.42; }
+        .mh-game-providers { margin-top:8px;padding-top:8px; }
+        .mh-game-actions { margin-top:9px !important;padding-bottom:11px; }
+        .mh-page-heading { display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 2px 2px; }
+        .mh-page-heading-copy { display:flex;align-items:center;gap:12px; }
+        .mh-page-heading h1 { margin:0;color:#fff;font-size:1.45rem;font-weight:850;letter-spacing:-.025em; }
+        .mh-page-heading p { margin:3px 0 0;color:var(--mh-muted);font-size:.82rem; }
+        .mh-game-actions { display:flex;align-items:center;gap:8px; }
+        .mh-card-menu { position:relative; }
+        .mh-card-menu summary { width:38px;height:36px;display:grid;place-items:center;border:1px solid var(--mh-border);border-radius:9px;background:#0a1b2a;color:#c7def2;cursor:pointer;list-style:none;font-weight:900;letter-spacing:.08em; }
+        .mh-card-menu summary::-webkit-details-marker { display:none; }
+        .mh-card-menu[open] summary { border-color:var(--mh-blue);color:#fff; }
+        .mh-card-menu-popover { position:absolute;z-index:20;right:0;bottom:44px;min-width:170px;display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid #294b66;border-radius:11px;background:#071522;box-shadow:0 18px 40px rgba(0,0,0,.45); }
+        .mh-card-menu-popover .fi-btn { width:100%;justify-content:flex-start; }
+        .mh-menu-action { width:100%;padding:9px 10px;border:0;border-radius:7px;background:transparent;color:#d9eafa;text-align:left;font-size:.78rem;font-weight:700;cursor:pointer; }
+        .mh-menu-action:hover { background:rgba(43,140,255,.13);color:#fff; }
+        .mh-menu-action-warning { color:#fbbf70; }
+        .mh-menu-action-success { color:#6ee7a8; }
+        .mh-menu-action-danger { color:#ff8790; }
+        .mh-editor-card { position:fixed;z-index:50;top:0;right:0;width:min(760px,calc(100vw - 280px));height:100vh;overflow:auto;border-radius:18px 0 0 18px;box-shadow:-28px 0 80px rgba(0,0,0,.55); }
+        .mh-editor-card::before { content:"";position:fixed;inset:0;right:min(760px,calc(100vw - 280px));background:rgba(1,7,13,.66);backdrop-filter:blur(2px);z-index:-1; }
+        @media (max-width:1500px) { .mh-games-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important} }
+        @media (max-width:1050px) { .mh-games-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important} }
+        @media (max-width:900px) { .mh-editor-card{width:100vw;border-radius:0}.mh-editor-card::before{display:none}.mh-catalog-stats{grid-template-columns:repeat(2,1fr)} }
+        @media (max-width:620px) { .mh-catalog-toolbar{flex-direction:column}.mh-filter-control{width:100%}.mh-games-grid{grid-template-columns:1fr !important} }
+        /* Compact library cards: isolated from the previous cover-tile styles. */
+        .mh-builder .mh-games-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important;align-items:stretch !important;gap:14px !important; }
+        .mh-library-card { display:grid;grid-template-columns:144px minmax(0,1fr);gap:12px 18px;padding:18px;border:1px solid #20364a;border-radius:12px;background:#0b1926;min-width:0; }
+        .mh-library-top { display:contents; }
+        .mh-library-art { grid-column:1;grid-row:1 / 4;align-self:start;width:100%;aspect-ratio:460 / 215;border-radius:7px;background-color:#07121d;background-image:var(--mh-art);background-position:center;background-repeat:no-repeat;background-size:contain; }
+        .mh-library-heading { grid-column:2;min-width:0; }
+        .mh-library-name { display:flex;flex-wrap:wrap;align-items:center;gap:7px; }
+        .mh-library-name > span:first-child { flex-basis:100%;font-size:1.05rem;font-weight:700;line-height:1.35;color:#f2f6fc;margin-bottom:3px;overflow-wrap:anywhere; }
+        .mh-library-name .mh-badge { font-size:.72rem;font-weight:600;min-height:23px;padding:4px 8px; }
+        .mh-library-providers { grid-column:2;min-width:0; }
+        .mh-library-providers .mh-chip-row { margin:0;gap:6px 12px; }
+        .mh-library-providers .mh-chip { padding:0;border:0;background:none;box-shadow:none;border-radius:0;color:#a9bdd0;font-size:.78rem;font-weight:500;line-height:1.5; }
+        .mh-library-actions { grid-column:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:2px; }
+        .mh-inline-action { padding:8px 10px;border:1px solid #294357;border-radius:7px;background:#102232;color:#d3e2ef;font-size:.8rem;font-weight:600;cursor:pointer; }
+        .mh-inline-action:hover { background:#19364d; }
+        .mh-inline-action:focus-visible,.mh-provider-more button:focus-visible { outline:2px solid #66b3ff;outline-offset:3px; }
+        .mh-provider-more { position:relative;display:inline-flex; }
+        .mh-provider-more button { color:#9ccaff;font-size:.78rem;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px; }
+        .mh-provider-tooltip { position:absolute;z-index:30;bottom:100%;right:0;width:190px;padding:12px;border:1px solid #36566f;border-radius:8px;background:#071522;color:#e4edf6;box-shadow:0 10px 24px #0006;font-size:.8rem;line-height:1.7; }
+        .mh-provider-tooltip[x-cloak] { display:none !important; }
+        .mh-library-card:focus-within { border-color:#4a82b3; }
+        .mh-library-card .mh-card-menu-popover { right:auto;left:0; }
+        @media (min-width:2000px) { .mh-builder .mh-games-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important} }
+        @media (max-width:1150px) { .mh-builder .mh-games-grid{grid-template-columns:1fr !important} }
+        @media (max-width:540px) { .mh-library-card{grid-template-columns:96px minmax(0,1fr);gap:10px 12px;padding:12px}.mh-library-name > span:first-child{font-size:.95rem} }
 </style>
 
     <div class="mh-builder space-y-5">
 
         
-<section class="mh-brand-banner">
-    <img class="mh-brand-banner-img" src="/modharbor/branding/banner-v3.webp" alt="ModHarbor — universal mod management for Pelican">
-</section>
+        <header class="mh-page-heading">
+            <div class="mh-page-heading-copy">
+                <div>
+                    <h1>Game Setup</h1>
+                    <p>Manage game definitions, providers, and deployment behavior.</p>
+                </div>
+            </div>
+            <x-filament::button wire:click="newGame">+ Add game</x-filament::button>
+        </header>
 
 
         @if ($message !== '')
@@ -2438,14 +2521,37 @@
                     </div>
                 </div>
 
-                <x-filament::button wire:click="newGame">
-                    + Add game
-                </x-filament::button>
             </div>
 
             <div class="mh-section">
+                @php
+                    $catalogStats = $this->catalogStats();
+                @endphp
+                <div class="mh-catalog-stats" aria-label="Game definition summary">
+                    <div><strong>{{ $catalogStats['total'] }}</strong><span>Games</span></div>
+                    <div><strong>{{ $catalogStats['enabled'] }}</strong><span>Enabled</span></div>
+                    <div><strong>{{ $catalogStats['official'] }}</strong><span>Official</span></div>
+                    <div><strong>{{ $catalogStats['custom'] }}</strong><span>Custom</span></div>
+                </div>
+                <div class="mh-catalog-toolbar">
+                    <label class="mh-search-control">
+                        <span aria-hidden="true">⌕</span>
+                        <input type="search" wire:model.live.debounce.250ms="catalogSearch" placeholder="Search games or providers…" aria-label="Search configured games">
+                    </label>
+                    <select wire:model.live="catalogFilter" class="mh-filter-control" aria-label="Filter configured games">
+                        <option value="all">All games</option>
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                        <option value="official">Official</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                @php
+                    $filteredGames = $this->filteredGames();
+                @endphp
                 <div class="mh-games-grid">
-                    @forelse ($games as $key => $game)
+                    @if (count($filteredGames ?? []) > 0)
+                    @foreach ($filteredGames as $key => $game)
                         @php
                             $official =
                                 $this->isOfficialDefinition(
@@ -2461,21 +2567,19 @@
 
                         <article
                             wire:key="game-{{ $key }}"
-                            class="mh-game-card"
+                            class="mh-library-card"
                         >
-                            <div class="mh-game-top">
-                                <div class="mh-game-mark">
-                                    <img
-                                        src="/modharbor/game-artwork/{{ rawurlencode((string) $key) }}?v={{ $artVersion }}"
-                                        alt=""
-                                        class="mh-game-icon"
-                                        loading="lazy"
-                                        referrerpolicy="no-referrer"
-                                    >
+                            <div class="mh-library-top">
+                                <div
+                                    class="mh-library-art"
+                                    role="img"
+                                    aria-label="{{ $game['name'] }} cover artwork"
+                                    style="--mh-art:url('/modharbor/game-artwork/{{ rawurlencode((string) $key) }}?v={{ $artVersion }}')"
+                                >
                                 </div>
 
-                                <div class="mh-game-heading">
-                                    <div class="mh-game-name">
+                                <div class="mh-library-heading">
+                                    <div class="mh-library-name">
                                         <span>{{ $game['name'] }}</span>
 
                                         @if ($game['enabled'])
@@ -2501,38 +2605,16 @@
                                 </div>
                             </div>
 
-                            <div class="mh-game-facts">
-                                @if (!empty($game['steam_app_id']))
-                                    <div>
-                                        <strong>Steam App ID:</strong>
-                                        {{ $game['steam_app_id'] }}
-                                    </div>
-                                @endif
-
-                                @if (!empty($game['detection']['egg_names']))
-                                    <div>
-                                        <strong>Exact egg:</strong>
-                                        {{ implode(', ', $game['detection']['egg_names']) }}
-                                    </div>
-                                @endif
-
-                                @if (!empty($game['detection']['egg_ids']))
-                                    <div>
-                                        <strong>Egg ID:</strong>
-                                        {{ implode(', ', $game['detection']['egg_ids']) }}
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="mh-game-providers">
+                            <div class="mh-library-providers">
                                 @php
                                     $sourceKeys = array_keys($game['sources'] ?? []);
                                     $visibleSources = array_slice($sourceKeys, 0, 3);
-                                    $extraSources = max(0, count($sourceKeys) - 3);
+                                    $extraSources = max(0, count($sourceKeys ?? []) - 3);
                                 @endphp
 
                                 <div class="mh-chip-row">
-                                    @forelse ($visibleSources as $source)
+                                    @if (count($visibleSources ?? []) > 0)
+                                    @foreach ($visibleSources as $source)
                                         @php
                                             $provider =
                                                 $this->providerOptions()[$source]
@@ -2545,58 +2627,63 @@
                                         >
                                             {{ $provider['label'] ?? $source }}
                                         </span>
-                                    @empty
+                                    @endforeach
+                                    @else
                                         <span class="mh-help">
                                             No providers selected
                                         </span>
-                                    @endforelse
+                                    @endif
 
                                     @if ($extraSources > 0)
-                                        <span class="mh-chip mh-package-chip">
-                                            +{{ $extraSources }} more
+                                        <span class="mh-provider-more" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @focusout="open = false" @keydown.escape.stop.prevent="open = false">
+                                            <button type="button" @focus="open = true" @click="open = true" @click.outside="open = false" :aria-expanded="open" aria-controls="extra-providers-{{ $key }}">
+                                                +{{ $extraSources }} more
+                                            </button>
+                                            <span id="extra-providers-{{ $key }}" class="mh-provider-tooltip" x-show="open" x-cloak>
+                                                @foreach (array_slice($sourceKeys, 3) as $extraSource)
+                                                    <span style="display:block">{{ $this->providerOptions()[$extraSource]['label'] ?? $extraSource }}</span>
+                                                @endforeach
+                                            </span>
                                         </span>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="mh-actions mh-game-actions">
+                            <div class="mh-library-actions">
                                 <x-filament::button
                                     wire:click="editGame('{{ $key }}')"
                                 >
-                                    Edit
+                                    Manage
                                 </x-filament::button>
-
-                                <x-filament::button
-                                    color="gray"
-                                    wire:click="exportGame('{{ $key }}')"
-                                >
+                                <button type="button" class="mh-inline-action" wire:click="exportGame('{{ $key }}')" wire:loading.attr="disabled">
                                     Export
-                                </x-filament::button>
-
-                                <x-filament::button
-                                    color="{{ $game['enabled'] ? 'warning' : 'success' }}"
-                                    wire:click="toggleGame('{{ $key }}')"
+                                </button>
+                                <button type="button" class="mh-inline-action" wire:click="toggleGame('{{ $key }}')" wire:loading.attr="disabled"
                                     wire:confirm="Change availability for every matching server? Disabled games block custom detection until re-enabled."
-                                >
-                                    {{ $game['enabled'] ? 'Disable' : 'Enable' }}
-                                </x-filament::button>
-
+                                >{{ $game['enabled'] ? 'Disable' : 'Enable' }}</button>
                                 @if (!$game['enabled'])
-                                    <x-filament::button
-                                        color="danger"
-                                        wire:click="deleteGame('{{ $key }}')"
-                                        wire:confirm="Export a backup first. Delete this definition? Existing mods stay on servers. Do not delete definitions still in use."
-                                    >
-                                        Delete
-                                    </x-filament::button>
+                                <details class="mh-card-menu">
+                                    <summary aria-label="More actions for {{ $game['name'] }}">•••</summary>
+                                    <div class="mh-card-menu-popover">
+                                        <button
+                                            type="button"
+                                            class="mh-menu-action mh-menu-action-danger"
+                                            style="{{ $game['enabled'] ? 'display:none' : '' }}"
+                                            @disabled($game['enabled'])
+                                            wire:click="deleteGame('{{ $key }}')"
+                                            wire:confirm="Export a backup first. Delete this definition? Existing mods stay on servers. Do not delete definitions still in use."
+                                        >Delete definition</button>
+                                    </div>
+                                </details>
                                 @endif
                             </div>
                         </article>
-                    @empty
+                    @endforeach
+                    @else
                         <div class="mh-empty-games">
-                            No game definitions are configured yet.
+                            No game definitions match the current search and filter.
                         </div>
-                    @endforelse
+                    @endif
                 </div>
             </div>
         </section>
@@ -3154,7 +3241,7 @@
                         </label>
                     </div>
 
-                    @if (count($allowedSources) > 0)
+                    @if (count($allowedSources ?? []) > 0)
                         <div style="margin-top:20px;">
                             <div class="mh-title">Provider metadata</div>
 

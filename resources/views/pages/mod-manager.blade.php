@@ -2983,15 +2983,41 @@
     }
 }
 
+/* ModHarbor 2026 unified server library */
+body:has(.gnmm) { background:#050d17; }
+body:has(.gnmm) .fi-header { display:none !important; }
+body:has(.gnmm) .fi-main { width:100% !important;max-width:none !important;padding-inline:clamp(14px,2.2vw,32px) !important; }
+.gnmm { --mh-navy:#07131f;--mh-panel:#0b1a29;--mh-line:#1c3851;--mh-blue:#2b8cff;color:#edf6ff; }
+.mh-brand-banner { border-radius:18px !important;border:1px solid rgba(43,140,255,.28) !important;box-shadow:0 22px 50px rgba(0,0,0,.28); }
+.mh-hero { border:1px solid var(--mh-line) !important;border-radius:18px !important;background:linear-gradient(135deg,#0c2236,#081522 66%,#0d2640) !important;box-shadow:0 18px 42px rgba(0,0,0,.23); }
+.mh-hero { display:none !important; }
+.mh-manager-heading { display:flex;align-items:center;justify-content:space-between;gap:18px;padding:3px 2px; }
+.mh-manager-heading-main { display:flex;align-items:center;gap:12px; }
+.mh-manager-heading h1 { margin:0;color:#fff;font-size:1.45rem;font-weight:850;letter-spacing:-.025em; }
+.mh-manager-heading p { margin:3px 0 0;color:#8facC5;font-size:.82rem; }
+.mh-manager-context { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px; }
+.gnmm-card { border-color:var(--mh-line) !important;border-radius:16px !important;background:linear-gradient(155deg,rgba(12,29,45,.98),rgba(6,17,28,.98)) !important; }
+.gnmm-tabs { gap:6px;padding:8px;border-bottom-color:#183149; }
+.gnmm-tab { border:0;border-radius:9px;padding:10px 16px;color:#8facC5; }
+.gnmm-tab:hover { background:rgba(43,140,255,.08);color:#dceeff; }
+.gnmm-tab-active { background:rgba(43,140,255,.17) !important;color:#8fc4ff !important;box-shadow:inset 0 0 0 1px rgba(43,140,255,.26); }
+.gnmm-content { padding:clamp(15px,2vw,24px); }
+.gnmm-input,.gnmm-installed-sort,input.gnmm-input,select.gnmm-input,textarea.gnmm-input { border-color:#294760 !important;background:#06121e !important;color:#edf6ff !important;border-radius:10px !important; }
+.gnmm-input:focus,.gnmm-installed-sort:focus { border-color:var(--mh-blue) !important;box-shadow:0 0 0 3px rgba(43,140,255,.14) !important; }
+.gnmm-mod-card,.gnmm-mod-row,.gnmm-installed-row { border-color:#19354d !important;background:rgba(7,20,32,.72) !important;border-radius:12px !important; }
+.gnmm-mod-card:hover,.gnmm-mod-row:hover,.gnmm-installed-row:hover { border-color:#315c7b !important;background:rgba(10,28,44,.92) !important; }
+.gnmm-btn-primary { background:linear-gradient(135deg,#2b8cff,#1569d8) !important;box-shadow:0 7px 18px rgba(43,140,255,.2); }
+.mh-dashboard-stats { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px; }
+.mh-dashboard-stat { display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--mh-line);border-radius:12px;background:rgba(8,23,36,.88); }
+.mh-dashboard-stat span { color:#8facC5;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700; }
+.mh-dashboard-stat strong { color:#fff;font-size:1.35rem; }
+@media(max-width:720px){.mh-dashboard-stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 
 
 <div class="gnmm">
 
 
-<section class="mh-brand-banner">
-    <img class="mh-brand-banner-img" src="/modharbor/branding/banner-v3.webp" alt="ModHarbor — universal mod management for Pelican">
-</section>
 
     <div class="mh-hero">
 
@@ -3144,6 +3170,16 @@
 
     </div>
 
+
+    @php
+        $overviewStats = $this->installedStats();
+    @endphp
+    <section class="mh-dashboard-stats" aria-label="Mod library summary">
+        <div class="mh-dashboard-stat"><span>Installed</span><strong>{{ $overviewStats['total'] }}</strong></div>
+        <div class="mh-dashboard-stat"><span>Updates</span><strong>{{ $overviewStats['updates'] }}</strong></div>
+        <div class="mh-dashboard-stat"><span>Providers</span><strong>{{ $overviewStats['providers'] }}</strong></div>
+        <div class="mh-dashboard-stat"><span>Disabled</span><strong>{{ $overviewStats['disabled'] }}</strong></div>
+    </section>
 
     <div class="gnmm-card">
 
@@ -4268,6 +4304,8 @@
                             >
                                 <option value="all" @selected($modioPeriod === 'all')>All Time</option>
                                 <option value="7d" @selected($modioPeriod === '7d')>Last 7 Days</option>
+                                <option value="14d" @selected($modioPeriod === '14d')>Last 14 Days</option>
+                                <option value="28d" @selected($modioPeriod === '28d')>Last 28 Days</option>
                                 <option value="30d" @selected($modioPeriod === '30d')>Last 30 Days</option>
                                 <option value="3m" @selected($modioPeriod === '3m')>Last 3 Months</option>
                                 <option value="6m" @selected($modioPeriod === '6m')>Last 6 Months</option>
@@ -4649,6 +4687,7 @@
                             </button>
                         </form>
 
+                        <p class="gnmm-field-help">Sort options depend on the provider. Downloads are lifetime totals. Where available, “Published within” filters by publication date, not downloads during that period.</p>
                         @foreach (($discoverySchema['filters'] ?? []) as $filterKey => $filterDefinition)
                             @if (!empty($filterDefinition['options']))
                                 <div style="margin-top:12px;max-width:240px;">
@@ -6016,4 +6055,3 @@
 </div>
 
 </x-filament-panels::page>
-

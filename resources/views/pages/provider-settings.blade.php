@@ -195,17 +195,49 @@ body:has(.mh-provider-settings) .fi-header {
         grid-template-columns: 1fr;
     }
 }
+.mh-provider-settings { --mh-line:#1b3850;--mh-text:#edf6ff;--mh-muted:#8eabc3;color:var(--mh-text); }
+body:has(.mh-provider-settings) { background:#050d17; }
+body:has(.mh-provider-settings) .fi-main { padding-inline:clamp(14px,2.2vw,32px) !important; }
+.mh-provider-settings-intro { position:relative;overflow:hidden;padding:22px;border-color:var(--mh-line);border-radius:15px;background:linear-gradient(135deg,#0d2133,#081521); }
+.mh-provider-settings-intro::after { content:"";position:absolute;width:220px;height:220px;right:-90px;top:-130px;border-radius:50%;background:rgba(43,140,255,.18);filter:blur(8px); }
+.mh-provider-settings-intro h2 { font-size:20px;color:#fff; }
+.mh-provider-settings-intro p { max-width:780px;color:var(--mh-muted);opacity:1; }
+.mh-provider-settings-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.mh-provider-card { position:relative;border-color:var(--mh-line);border-radius:15px;background:linear-gradient(155deg,rgba(13,30,45,.98),rgba(7,18,29,.98));box-shadow:0 16px 34px rgba(0,0,0,.18); }
+.mh-provider-card::before { content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#2b8cff;opacity:.75; }
+.mh-provider-card-head { min-height:64px;border-color:#162e43; }
+.mh-provider-name { font-size:16px;color:#fff; }
+.mh-provider-status { max-width:55%;padding:5px 9px;border:1px solid rgba(43,140,255,.25);border-radius:999px;background:rgba(43,140,255,.09);color:#a9d3ff;opacity:1; }
+.mh-provider-input,.mh-provider-select { border-color:#28455e;background:#06121e;color:#eaf5ff; }
+.mh-provider-input:focus,.mh-provider-select:focus { border-color:#2b8cff;box-shadow:0 0 0 3px rgba(43,140,255,.14);outline:0; }
+.mh-provider-secret-toggle { border-color:#28455e;background:#0a1a29;color:#cce6ff; }
+.mh-provider-save { background:linear-gradient(135deg,#2b8cff,#1569d8);box-shadow:0 8px 20px rgba(43,140,255,.2); }
+.mh-provider-kicker { margin-bottom:7px;color:#66b3ff;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase; }
+@media (max-width: 980px) { .mh-provider-settings-grid{grid-template-columns:1fr} }
+.mh-backup { padding:16px 18px;margin-bottom:16px;border:1px solid #1b3850;border-radius:12px;background:#0a1825; }
+.mh-backup-toolbar { display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px; }
+.mh-backup-copy { flex:1 1 240px; }
+.mh-backup-copy h2 { margin:0;color:#f0f6fc;font-size:15px;font-weight:700; }
+.mh-backup-copy p { margin:4px 0 0;color:#b0c3d5;font-size:12px;line-height:1.5; }
+.mh-backup-import { display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex:0 1 490px;min-width:0; }
+.mh-backup-file { flex:1 1 240px;min-width:0;max-width:100%;width:280px;height:40px;padding:4px;border:1px solid #42627c;border-radius:8px;background:#06121e;color:#e2edf7;font-size:13px; }
+.mh-backup-file::file-selector-button { height:30px;padding:0 12px;margin-right:10px;border:1px solid #527795;border-radius:5px;background:#1a3c57;color:#fff;font-weight:600;cursor:pointer; }
+.mh-backup-file:hover::file-selector-button { background:#245475; }
+.mh-backup-file:focus-visible,.mh-backup details summary:focus-visible { outline:2px solid #70b9ff;outline-offset:3px; }
+.mh-backup .mh-provider-save { min-height:40px;font-size:13px;white-space:nowrap; }
+.mh-backup-error { flex-basis:100%;color:#ffafb5;font-size:13px; }
+.mh-backup details { margin-top:10px;color:#afc3d6;font-size:12px;line-height:1.5; }
+.mh-backup details summary { width:fit-content;color:#9bc9f0;cursor:pointer; }
+.mh-backup details p { margin:6px 0 0;max-width:900px; }
+@media(max-width:700px) { .mh-backup-import{flex-basis:100%}.mh-backup-file{width:100%} }
 </style>
 
-
-<section class="mh-brand-banner">
-    <img class="mh-brand-banner-img" src="/modharbor/branding/banner-v3.webp" alt="ModHarbor — universal mod management for Pelican">
-</section>
 
 <div class="mh-provider-settings">
 
     <div class="mh-provider-settings-intro">
-        <h2>Global Provider Connections</h2>
+        <div class="mh-provider-kicker">ModHarbor</div>
+        <h2>Provider Settings</h2>
 
         <p>
             Credentials saved here are shared by every configured game that
@@ -214,6 +246,29 @@ body:has(.mh-provider-settings) .fi-header {
         </p>
     </div>
 
+    <section class="mh-backup" aria-label="Provider backup and restore">
+        <div class="mh-backup-toolbar">
+        <div class="mh-backup-copy">
+            <h2>Backup &amp; restore</h2>
+            <p>All saved providers. Exports contain readable API keys—keep them private.</p>
+        </div>
+        <button type="button" class="mh-provider-save"
+            wire:click="exportAllSettings" wire:loading.attr="disabled"
+            wire:confirm="Download all saved provider settings including readable API keys and tokens? Keep this file private.">Export all settings</button>
+        <form wire:submit="importAllSettings" class="mh-backup-import">
+            <input id="mh-settings-import" class="mh-backup-file" aria-label="Choose provider backup JSON file" type="file" wire:model="settingsImport" accept=".json,application/json">
+            <button type="submit" class="mh-provider-save" wire:loading.attr="disabled"
+                wire:target="settingsImport,importAllSettings"
+                wire:confirm="Import this backup and overwrite matching saved provider settings? Export your current settings first.">Import settings</button>
+            <span wire:loading wire:target="settingsImport" role="status">Uploading backup…</span>
+            @error('settingsImport') <p class="mh-backup-error" role="alert">{{ $message }}</p> @enderror
+        </form>
+        </div>
+        <details>
+            <summary>Import details</summary>
+            <p>Export includes saved settings only. Import overwrites matching settings. Blank secrets keep existing credentials; providers absent from the file stay unchanged. Export a backup first. Providers save individually; a storage failure may leave a partial import.</p>
+        </details>
+    </section>
     <div class="mh-provider-settings-grid">
 
         @forelse ($providers as $providerKey => $provider)

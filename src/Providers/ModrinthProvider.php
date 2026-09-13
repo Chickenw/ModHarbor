@@ -36,6 +36,12 @@ class ModrinthProvider extends AbstractCatalogProvider implements VersionedDownl
             $values = (array) $source->value($key, []);
             if ($values !== []) { $facets[] = array_map(fn ($v) => $facet . ':' . (string) $v, $values); }
         }
+        $period = (string) $query->filter('published_period', 'all');
+        $days = ['7d' => 7, '14d' => 14, '28d' => 28, '1y' => 365][$period] ?? null;
+        if ($days !== null) {
+            // Filter at the provider before pagination; download ranking remains lifetime.
+            $facets[] = ['created_timestamp >= ' . (time() - $days * 86400)];
+        }
         $sort = in_array($query->sort, ['relevance', 'downloads', 'follows', 'newest', 'updated'], true) ? $query->sort : 'relevance';
         $size = max(1, min(100, $query->perPage)); $page = max(1, $query->page);
         $data = $this->api('search', ['query' => $query->search, 'index' => $sort,

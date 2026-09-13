@@ -151,6 +151,57 @@ function fiveSteam(?\Closure $override = null): array
     return [new SteamWorkshopProvider($http), $http, fiveSource('steam-workshop', ['app_id' => 456])];
 }
 
+fiveTest('expanded catalog sort menus map to native provider requests', function () {
+    foreach (['featured' => 1, 'popular' => 2, 'updated' => 3, 'name' => 4, 'author' => 5, 'downloads' => 6, 'category' => 7, 'game_version' => 8, 'early_access' => 9, 'featured_released' => 10, 'newest' => 11, 'rating' => 12] as $sort => $field) {
+        [$provider, $http, $source] = fiveCurse();
+        $provider->discover(new DiscoveryQuery(sort: $sort, page: 2), $source);
+        $params = $http->requests[0]['parameters'];
+        check($params['sortField'] === $field && $params['index'] === 24, 'CurseForge sort/pagination mismatch: ' . $sort);
+        check($params['sortOrder'] === (in_array($sort, ['name', 'author', 'category'], true) ? 'asc' : 'desc'), 'CurseForge direction mismatch');
+    }
+    foreach (['popular' => 0, 'newest' => 1, 'updated' => 21, 'subscribers' => 9, 'votes' => 11, 'relevance' => 12, 'trend_today' => 3, 'trend_week' => 3] as $sort => $field) {
+        [$provider, $http, $source] = fiveSteam();
+        $provider->discover(new DiscoveryQuery(sort: $sort, page: 2), $source);
+        $params = json_decode($http->requests[0]['parameters']['input_json'], true, 512, JSON_THROW_ON_ERROR);
+        check($params['query_type'] === $field && $params['page'] === 2 && $params['appid'] === 456, 'Steam sort/scope mismatch: ' . $sort);
+        if (str_starts_with($sort, 'trend_')) {
+            check($params['days'] === ($sort === 'trend_today' ? 1 : 7) && $params['include_recent_votes_only'], 'Steam trend range mismatch');
+        } else { check(!isset($params['days']), 'Trend range leaked to a different Steam sort'); }
+    }
+    foreach (['newest', 'updated', 'likes', 'downloads', 'views'] as $sort) {
+        [$provider, $http, $source] = fiveSeven();
+        $provider->discover(new DiscoveryQuery(sort: $sort), $source);
+        check($http->requests[0]['parameters']['sort'] === $sort, '7Days sort mismatch');
+    }
+    foreach (['updated' => 'last-updated', 'newest' => 'newest', 'downloads' => 'most-downloaded', 'rating' => 'top-rated'] as $sort => $field) {
+        $http = new FiveHttp(fn () => ['count' => 0, 'results' => []]);
+        $provider = new \GameNest\GameNestModManager\Providers\ThunderstoreProvider($http);
+        $provider->discover(new DiscoveryQuery(sort: $sort, page: 2), fiveSource('thunderstore', ['community' => 'valheim']));
+        check($http->requests[0]['parameters']['ordering'] === $field && $http->requests[0]['parameters']['page'] === 2, 'Thunderstore sort mismatch');
+    }
+});
+
+fiveTest('Nexus expanded sorts and publication/update windows preserve game scope', function () {
+    foreach (['endorsements' => 'endorsements', 'unique_downloads' => 'uniqueDownloads', 'relevance' => 'relevance', 'size' => 'size', 'last_comment' => 'lastComment'] as $sort => $field) {
+        [$provider, $http, $source] = fiveNexus();
+        $provider->discover(new DiscoveryQuery(sort: $sort), $source);
+        check($http->requests[0]['parameters']['variables']['sort'] === [[$field => ['direction' => 'DESC']]], 'Nexus sort mismatch');
+    }
+    foreach (['7d' => 7, '14d' => 14, '28d' => 28, '1y' => 365] as $period => $days) {
+        [$provider, $http, $source] = fiveNexus();
+        $before = time() - $days * 86400;
+        $provider->discover(new DiscoveryQuery(filters: ['published_period' => $period, 'updated_period' => $period]), $source);
+        $filters = $http->requests[0]['parameters']['variables']['filter']['filter'];
+        check(isset($filters[0]['gameDomainName']), 'Nexus game scope missing');
+        foreach (['createdAt', 'updatedAt'] as $field) {
+            $found = array_values(array_filter($filters, fn ($filter) => isset($filter[$field])));
+            check(count($found) === 1 && $found[0][$field]['op'] === 'GTE', 'Nexus native date filter missing');
+            $cutoff = strtotime($found[0][$field]['value']);
+            check($cutoff >= $before && $cutoff <= time() - $days * 86400, 'Nexus cutoff mismatch');
+        }
+    }
+});
+
 fiveTest('all registrations are discoverable with correct generic or managed lifecycle', function () {
     $registry = new SourceRegistry(new AdapterRegistry, new ProviderContext(new AdapterRegistry));
     $definitions = $registry->definitions();
@@ -218,6 +269,30 @@ fiveTest('Modrinth search facets pagination auth and immutable contexts', functi
     $p->discover(new DiscoveryQuery, fiveSource('modrinth', ['loaders' => ['forge']]));
     check(!str_contains($http->requests[1]['parameters']['facets'], 'fabric'), 'Cross-game context leaked');
 });
+fiveTest('Modrinth publication windows are sent before pagination with lifetime download sorting', function () {
+    foreach (['7d' => 7, '14d' => 14, '28d' => 28, '1y' => 365] as $period => $days) {
+        [$provider, $http, $source] = fiveModrinth();
+        $before = time() - $days * 86400;
+        $provider->discover(new DiscoveryQuery(sort: 'downloads', page: 2, perPage: 24, filters: ['published_period' => $period]), $source);
+        $params = $http->requests[0]['parameters'];
+        check($params['index'] === 'downloads' && $params['offset'] === 24, 'Sort or pagination changed');
+        $facets = json_decode($params['facets'], true, 512, JSON_THROW_ON_ERROR);
+        $date = end($facets)[0];
+        check(str_starts_with($date, 'created_timestamp >= '), 'Missing native publication facet');
+        $timestamp = (int) substr($date, strlen('created_timestamp >= '));
+        check($timestamp >= $before && $timestamp <= time() - $days * 86400, 'Incorrect publication cutoff');
+    }
+    [$provider, $http, $source] = fiveModrinth();
+    $provider->discover(new DiscoveryQuery(filters: ['published_period' => 'all']), $source);
+    check(!str_contains($http->requests[0]['parameters']['facets'], 'created_timestamp'), 'All time unexpectedly filters dates');
+});
+
+fiveTest('CurseForge newest release uses native ReleasedDate ordering', function () {
+    [$provider, $http, $source] = fiveCurse();
+    $provider->discover(new DiscoveryQuery(sort: 'newest'), $source);
+    check($http->requests[0]['parameters']['sortField'] === 11, 'Incorrect newest release sort');
+});
+
 fiveTest('Modrinth exact version pins preserve hashes and reject another project', function () {
     [$p,,$s] = fiveModrinth(); check($p->package('project1', 'oldversion', $s)['id'] === 'oldversion', 'Pin ignored');
     [$p,,$s] = fiveModrinth(fn ($u) => str_ends_with($u, '/version/oldversion') ? fiveVersion(['id' => 'oldversion', 'project_id' => 'other']) : null);

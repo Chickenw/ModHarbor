@@ -58,11 +58,66 @@ class GameSetup extends Page
     public string $configDirectories = 'Configs';
     public string $configRulesJson = '';
     public string $message = '';
+    public string $catalogSearch = '';
+    public string $catalogFilter = 'all';
 
     public $importFile = null;
 
     /** @var mixed Temporary Livewire upload before Save Game. */
     public $artworkUpload = null;
+
+    public function catalogStats(): array
+    {
+        $games = is_array($this->games) ? $this->games : [];
+        $stats = ['total' => count($games), 'enabled' => 0, 'official' => 0, 'custom' => 0];
+
+        foreach ($games as $key => $game) {
+            if (!empty($game['enabled'])) {
+                $stats['enabled']++;
+            }
+
+            if ($this->isOfficialDefinition((string) $key)) {
+                $stats['official']++;
+            } else {
+                $stats['custom']++;
+            }
+        }
+
+        return $stats;
+    }
+
+    public function filteredGames(): array
+    {
+        $query = mb_strtolower(trim($this->catalogSearch));
+        $games = is_array($this->games) ? $this->games : [];
+
+        return array_filter($games, function (mixed $game, string|int $key) use ($query): bool {
+            if (!is_array($game)) {
+                return false;
+            }
+
+            $official = $this->isOfficialDefinition((string) $key);
+            $matchesFilter = match ($this->catalogFilter) {
+                'enabled' => !empty($game['enabled']),
+                'disabled' => empty($game['enabled']),
+                'official' => $official,
+                'custom' => !$official,
+                default => true,
+            };
+
+            if (!$matchesFilter || $query === '') {
+                return $matchesFilter;
+            }
+
+            $haystack = mb_strtolower(implode(' ', [
+                (string) $key,
+                (string) ($game['name'] ?? ''),
+                implode(' ', array_keys($game['sources'] ?? [])),
+            ]));
+
+            return str_contains($haystack, $query);
+        }, ARRAY_FILTER_USE_BOTH);
+    }
 
     public static function canAccess(): bool
     {

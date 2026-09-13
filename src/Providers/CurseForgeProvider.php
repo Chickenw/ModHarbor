@@ -29,8 +29,8 @@ class CurseForgeProvider extends AbstractCatalogProvider implements VersionedDow
         $source = $this->context($source); $size = max(1, min(50, $query->perPage)); $page = max(1, $query->page);
         if ($page * $size > 10000) { throw new RuntimeException('CurseForge limits searches to 10,000 results.'); }
         $params = ['gameId' => $this->numeric($source->require('game_id')), 'searchFilter' => $query->search,
-            'sortField' => ['popular' => 2, 'updated' => 3, 'name' => 4, 'downloads' => 6][$query->sort] ?? 2,
-            'sortOrder' => $query->sort === 'name' ? 'asc' : 'desc', 'index' => ($page - 1) * $size, 'pageSize' => $size] + $this->filters($source);
+            'sortField' => ['featured' => 1, 'popular' => 2, 'updated' => 3, 'name' => 4, 'author' => 5, 'downloads' => 6, 'category' => 7, 'game_version' => 8, 'early_access' => 9, 'featured_released' => 10, 'newest' => 11, 'rating' => 12][$query->sort] ?? 2,
+            'sortOrder' => in_array($query->sort, ['name', 'author', 'category'], true) ? 'asc' : 'desc', 'index' => ($page - 1) * $size, 'pageSize' => $size] + $this->filters($source);
         $data = $this->api('mods/search', $params);
         if (!is_array($data['data'] ?? null) || !isset($data['pagination']['totalCount'])) { throw new RuntimeException('CurseForge returned an invalid catalog.'); }
         return DiscoveryResult::page(array_map(fn ($p) => $this->normalize($p, $source), $data['data']),

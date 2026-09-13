@@ -20,7 +20,7 @@ class SevenDaysModsProvider extends AbstractCatalogProvider implements Versioned
     {
         $this->context($source); $size = max(1, min(50, $query->perPage)); $page = max(1, $query->page);
         $params = ['q' => $query->search, 'page' => $page, 'limit' => $size,
-            'sort' => in_array($query->sort, ['newest', 'updated', 'downloads'], true) ? $query->sort : 'newest'];
+            'sort' => in_array($query->sort, ['newest', 'updated', 'likes', 'downloads', 'views'], true) ? $query->sort : 'newest'];
         foreach (['category', 'game_version', 'server_side'] as $key) {
             $values = (array) $source->value($key, []);
             if ($values) { $params[$key] = implode(',', array_map(fn ($v) => $this->slug($v), $values)); }

@@ -255,6 +255,8 @@ class ModIoProvider implements ModProvider, DiscoverableProvider, VersionListing
         $allowedPeriods = [
             'all' => null,
             '7d' => 7,
+            '14d' => 14,
+            '28d' => 28,
             '30d' => 30,
             '3m' => 90,
             '6m' => 180,

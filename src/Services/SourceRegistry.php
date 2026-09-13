@@ -153,7 +153,12 @@ class SourceRegistry
 
     public function defaultBrowseKey(Server $server): string
     {
-        $sources = $this->browseKeys($server);
+        // Prefer a searchable catalog enabled for this game. Manual sources
+        // (GitHub, direct URLs and uploads) remain available as fallbacks.
+        $sources = $this->discoveryKeys($server);
+        if ($sources === []) {
+            $sources = $this->browseKeys($server);
+        }
 
         usort($sources, function (string $left, string $right): int {
             $leftPriority = (int) ($this->definition($left)['browse_priority'] ?? 1000);

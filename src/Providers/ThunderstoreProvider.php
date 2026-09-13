@@ -39,7 +39,7 @@ class ThunderstoreProvider extends AbstractCatalogProvider implements Configured
         $params = [
             'deprecated' => 'False',
             'nsfw' => 'False',
-            'ordering' => $query->sort === 'downloads' ? 'most-downloaded' : 'last-updated',
+            'ordering' => ['downloads' => 'most-downloaded', 'newest' => 'newest', 'rating' => 'top-rated', 'updated' => 'last-updated'][$query->sort] ?? 'last-updated',
             'page' => $page,
         ];
         if ($query->search !== '') {

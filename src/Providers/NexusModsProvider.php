@@ -154,12 +154,24 @@ class NexusModsProvider extends AbstractCatalogProvider implements VersionedDown
             ];
         }
 
+        foreach (['published_period' => 'createdAt', 'updated_period' => 'updatedAt'] as $key => $field) {
+            $period = (string) $query->filter($key, 'all');
+            $days = ['7d' => 7, '14d' => 14, '28d' => 28, '1y' => 365][$period] ?? null;
+            if ($days !== null) {
+                $filters[] = [$field => ['value' => gmdate('Y-m-d\TH:i:s\Z', time() - $days * 86400), 'op' => 'GTE']];
+            }
+        }
         $filter = [
             'filter' => $filters,
             'op' => 'AND',
         ];
 
         $sort = match ($query->sort) {
+            'endorsements' => [['endorsements' => ['direction' => 'DESC']]],
+            'unique_downloads' => [['uniqueDownloads' => ['direction' => 'DESC']]],
+            'relevance' => [['relevance' => ['direction' => 'DESC']]],
+            'size' => [['size' => ['direction' => 'DESC']]],
+            'last_comment' => [['lastComment' => ['direction' => 'DESC']]],
             'newest' => [
                 [
                     'createdAt' => [

@@ -15,10 +15,14 @@ class SteamWorkshopProvider extends AbstractCatalogProvider
         $page = max(1, $query->page); $size = max(1, min(50, $query->perPage));
         if ($page > 1000) { throw new RuntimeException('Steam Workshop page limit reached. Narrow the search.'); }
         $input = ['appid' => (int) $app, 'page' => $page, 'numperpage' => $size,
-            'query_type' => ['popular' => 0, 'newest' => 1, 'updated' => 21][$query->sort] ?? 0,
+            'query_type' => ['popular' => 0, 'newest' => 1, 'trend_today' => 3, 'trend_week' => 3, 'subscribers' => 9, 'votes' => 11, 'relevance' => 12, 'updated' => 21][$query->sort] ?? 0,
             'search_text' => $query->search, 'return_metadata' => true, 'return_short_description' => true,
             'return_previews' => true, 'return_children' => true, 'filetype' => 0,
             'requiredtags' => array_values((array) $source->value('tags', [])), 'match_all_tags' => true];
+        if (in_array($query->sort, ['trend_today', 'trend_week'], true)) {
+            $input['days'] = $query->sort === 'trend_today' ? 1 : 7;
+            $input['include_recent_votes_only'] = true;
+        }
         $data = $this->json('https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/',
             ['key' => $this->setting('api_key', true), 'input_json' => json_encode($input, JSON_THROW_ON_ERROR)]);
         $response = $data['response'] ?? [];

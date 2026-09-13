@@ -70,7 +70,11 @@ return [
             'discovery' => [
                 'description' => 'Browse the full Nexus Mods catalog for this game. Search by mod name or enter a numeric mod ID for exact lookup. Direct installation requires eligible Nexus API access; other accounts can download from Nexus and install with Upload File.',
                 'search_placeholder' => 'Filter this feed or enter a mod ID...',
-                'default_sort' => 'updated', 'sorts' => ['updated' => 'Recently Updated', 'newest' => 'Recently Added', 'trending' => 'Trending'],
+                'default_sort' => 'updated', 'sorts' => ['updated' => 'Recently Updated', 'newest' => 'Newest', 'downloads' => 'Most Downloads (Lifetime)', 'unique_downloads' => 'Most Unique Downloads', 'endorsements' => 'Most Endorsed', 'relevance' => 'Relevance', 'name' => 'Name A-Z', 'size' => 'Largest File Size', 'last_comment' => 'Latest Comment'],
+                'filters' => [
+                    'published_period' => ['label' => 'Published within', 'default' => 'all', 'options' => ['all' => 'All time', '7d' => 'Last 7 days', '14d' => 'Last 14 days', '28d' => 'Last 28 days', '1y' => 'Last 365 days']],
+                    'updated_period' => ['label' => 'Updated within', 'default' => 'all', 'options' => ['all' => 'All time', '7d' => 'Last 7 days', '14d' => 'Last 14 days', '28d' => 'Last 28 days', '1y' => 'Last 365 days']],
+                ],
                 'page_sizes' => [24, 48],
             ],
         ],
@@ -85,7 +89,7 @@ return [
                 'description' => 'Browse Thunderstore packages for the configured community. Select a package to install the published zip through the generic archive driver.',
                 'search_placeholder' => 'Filter Thunderstore packages...',
                 'default_sort' => 'updated',
-                'sorts' => ['updated' => 'Recently Updated'],
+                'sorts' => ['updated' => 'Recently Updated', 'newest' => 'Newest', 'downloads' => 'Most Downloads (Lifetime)', 'rating' => 'Top Rated'],
                 'page_sizes' => [24, 48],
             ],
         ],
@@ -97,7 +101,7 @@ return [
             'metadata_example' => ['game_version' => ['v3'], 'server_side' => ['server-only', 'server-and-client']],
             'discovery' => [
                 'description' => 'Search the public catalog. Single clean main packages can install directly; external links and packages requiring manual selection use the provider website and Upload File.',
-                'default_sort' => 'newest', 'sorts' => ['newest' => 'Newest', 'updated' => 'Recently Updated', 'downloads' => 'Most Downloaded'], 'page_sizes' => [20, 40],
+                'default_sort' => 'newest', 'sorts' => ['newest' => 'Newest', 'updated' => 'Recently Updated', 'downloads' => 'Most Downloaded', 'likes' => 'Most Liked', 'views' => 'Most Viewed'], 'page_sizes' => [20, 40],
             ],
         ],
         'steam-workshop' => [
@@ -125,7 +129,7 @@ return [
             ],
             'discovery' => [
                 'description' => 'Public Workshop items for this app. Deployment requires a dedicated SteamCMD installation and anonymous download support. Older revisions cannot be retrieved.',
-                'default_sort' => 'popular', 'sorts' => ['popular' => 'Popular', 'newest' => 'Newest', 'updated' => 'Recently Updated'], 'page_sizes' => [24, 48],
+                'default_sort' => 'popular', 'sorts' => ['popular' => 'Top Rated', 'newest' => 'Newest', 'updated' => 'Recently Updated', 'subscribers' => 'Most Subscribed', 'votes' => 'Most Upvoted', 'relevance' => 'Search Relevance', 'trend_today' => 'Trending Today (Votes)', 'trend_week' => 'Trending Last 7 Days (Votes)'], 'page_sizes' => [24, 48],
             ],
         ],
         'curseforge' => [
@@ -146,7 +150,7 @@ return [
             ],
             'discovery' => [
                 'description' => 'Browse files compatible with the configured game and version. Requires a global CurseForge API key; author distribution restrictions are respected.',
-                'default_sort' => 'popular', 'sorts' => ['popular' => 'Popular', 'updated' => 'Recently Updated', 'name' => 'A–Z', 'downloads' => 'Most Downloaded'], 'page_sizes' => [24, 48],
+                'default_sort' => 'popular', 'sorts' => ['popular' => 'Popular', 'newest' => 'Newest Release', 'updated' => 'Recently Updated', 'name' => 'A–Z', 'downloads' => 'Most Downloads (Lifetime)', 'featured' => 'Featured', 'author' => 'Author A-Z', 'category' => 'Category', 'game_version' => 'Game Version', 'early_access' => 'Early Access First', 'featured_released' => 'Featured Releases', 'rating' => 'Highest Rated'], 'page_sizes' => [24, 48],
             ],
         ],
         'modrinth' => [
@@ -166,7 +170,14 @@ return [
             ],
             'discovery' => [
                 'description' => 'Browse packages for the configured loaders and game versions. Stable releases are selected unless prereleases are explicitly enabled in source metadata.',
-                'default_sort' => 'relevance', 'sorts' => ['relevance' => 'Relevance', 'downloads' => 'Most Downloaded', 'newest' => 'Newest', 'updated' => 'Recently Updated'], 'page_sizes' => [24, 48],
+                'default_sort' => 'relevance', 'sorts' => ['relevance' => 'Relevance', 'downloads' => 'Most Downloads (Lifetime)', 'follows' => 'Most Followers', 'newest' => 'Newest', 'updated' => 'Recently Updated'], 'page_sizes' => [24, 48],
+                'filters' => [
+                    'published_period' => [
+                        'label' => 'Published within',
+                        'default' => 'all',
+                        'options' => ['all' => 'All time', '7d' => 'Last 7 days', '14d' => 'Last 14 days', '28d' => 'Last 28 days', '1y' => 'Last 365 days'],
+                    ],
+                ],
             ],
         ],
         'modio' => [
@@ -217,11 +228,13 @@ return [
                 'default_page_size' => 24,
                 'filters' => [
                     'period' => [
-                        'label' => 'Period',
+                        'label' => 'Published within',
                         'default' => 'all',
                         'options' => [
                             'all' => 'All Time',
                             '7d' => 'Last 7 Days',
+                            '14d' => 'Last 14 Days',
+                            '28d' => 'Last 28 Days',
                             '30d' => 'Last 30 Days',
                             '3m' => 'Last 3 Months',
                             '6m' => 'Last 6 Months',

@@ -13,6 +13,98 @@ use Throwable;
 
 class ProviderSettings extends Page
 {
+    use \Livewire\WithFileUploads;
+
+    public $settingsImport = null;
+
+    public function exportAllSettings(): mixed
+    {
+        $this->authorizeSettings();
+        try {
+            $store = app(ProviderSettingsStore::class);
+            $data = [];
+            foreach (app(SourceRegistry::class)->definitions() as $key => $definition) {
+                $fields = $definition['credential_fields'] ?? [];
+                if (!$fields) { continue; }
+                foreach ($fields as $field => $schema) {
+                    $data[$key][$field] = $store->get($key, $field,
+                        config('gamenest-mod-manager.' . $key . '.' . $field, $schema['default'] ?? ''));
+                }
+            }
+            $json = json_encode(['format' => 'modharbor-provider-settings', 'version' => 1,
+                'providers' => $data], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+            return response()->streamDownload(static function () use ($json) { echo $json; },
+                'modharbor-providers-' . date('Ymd-His') . '.json',
+                ['Content-Type' => 'application/json', 'Cache-Control' => 'no-store']);
+        } catch (Throwable) {
+            Notification::make()->title('Export failed')->body('Unable to read saved provider settings. No backup was exported.')->danger()->send();
+            return null;
+        }
+    }
+
+    public function importAllSettings(): void
+    {
+        $this->authorizeSettings();
+        $this->validate(['settingsImport' => 'required|file|max:256']);
+        $saved = 0;
+        try {
+            $data = json_decode(file_get_contents($this->settingsImport->getRealPath()), true, 32, JSON_THROW_ON_ERROR);
+            $definitions = app(SourceRegistry::class)->definitions();
+            if (!is_array($data) || ($data['format'] ?? '') !== 'modharbor-provider-settings'
+                || ($data['version'] ?? null) !== 1 || !is_array($data['providers'] ?? null)
+                || !$data['providers']) {
+                throw new RuntimeException('Invalid backup.');
+            }
+            $plans = [];
+            $store = app(ProviderSettingsStore::class);
+            foreach ($data['providers'] as $key => $values) {
+                $fields = $definitions[$key]['credential_fields'] ?? [];
+                if (!$fields || !is_array($values) || array_diff_key($values, $fields)) {
+                    throw new RuntimeException('Unknown provider or field.');
+                }
+                $merged = [];
+                foreach ($fields as $field => $schema) {
+                    $value = $values[$field] ?? $store->get($key, $field,
+                        config('gamenest-mod-manager.' . $key . '.' . $field, $schema['default'] ?? ''));
+                    if (!is_scalar($value) || strlen((string) $value) > 16384) {
+                        throw new RuntimeException('Invalid value.');
+                    }
+                    $type = $schema['type'] ?? 'text';
+                    if ($type === 'secret' && trim((string) $value) === '') {
+                        $value = $store->get($key, $field, '');
+                    }
+                    if (!empty($schema['required']) && trim((string) $value) === '') {
+                        throw new RuntimeException('Required field missing.');
+                    }
+                    if ($type === 'number' && $value !== '' && !preg_match('/^-?[0-9]+$/D', (string) $value)) {
+                        throw new RuntimeException('Invalid number.');
+                    }
+                    if ($type === 'boolean' && filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === null) {
+                        throw new RuntimeException('Invalid boolean.');
+                    }
+                    $merged[$field] = $value;
+                }
+                if ($key === 'modio' && isset($merged['api_path'])) {
+                    $merged['api_path'] = ProviderConnectionService::modioBase($merged['api_path']);
+                }
+                $plans[$key] = [$merged, $fields];
+            }
+            foreach ($plans as $key => [$values, $fields]) {
+                $store->save($key, $values, $fields);
+                $saved++;
+            }
+            $this->loadProviders();
+            Notification::make()->title('Provider settings imported')->body($saved . ' providers saved. Test each connection before use.')->success()->send();
+        } catch (Throwable) {
+            Notification::make()->title('Import could not finish')
+                ->body($saved . ' providers saved. Check the backup format, required fields and storage permissions. Previously saved providers remain applied.')
+                ->danger()->send();
+        } finally {
+            if ($this->settingsImport) { $this->settingsImport->delete(); }
+            $this->settingsImport = null;
+        }
+    }
+
     protected string $view =
         'gamenest-mod-manager::pages.provider-settings';
 
